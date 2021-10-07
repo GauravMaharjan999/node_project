@@ -1,40 +1,39 @@
-const http = require('http');
-const url = require('url');
+require('dotenv').config()
+const express = require("express")
+const bodyParser = require("body-parser")
+const app = express()
 
 
+let users = []; //id, name, email, address
 
-const server = http.createServer((request, response) => {
-    let content = "";
-    let statusCode = "";
-
-    switch (request.url) {
-
-        case "/":
-            content = "<h1>This is root page</h1>";
-            break;
-
-        case "/profile":
-            content = "<h1>This is profile page</h1>";
-            break;
-
-        case "/about":
-            content = "<h1>This is about page</h1>";
-            break;
-
-        default:
-            content = "<h1>This is 404 page</h1>";
-
-    }
+app.use(bodyParser.json());
 
 
-    response.writeHead(200, { 'Content-Type': 'text/html' });
+//crud
 
-    response.write(content);
+//get all users, request method : get 
+app.get('/users', (req, res) => {
+    res.json(users);
 
-    response.end();
-});
+})
 
-const port = 3000;
-server.listen(port, () => {
-    console.log(`Server is running at port: ${port}`);
-});
+
+//create a user , request method : post
+app.post('/users', (req, res) => {
+    users.push(req.body);
+    res.status(201).json(req.body);
+})
+
+//get user by id , request method :Get
+app.get('/users/:id', (req, res) => {
+    let user = users.find(user => user.id === parseInt(req.params.id));
+    if (!user) res.status(404).send('The user with the given id is not found');
+
+    res.json(user)
+})
+
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running in the port ${port}`);
+})

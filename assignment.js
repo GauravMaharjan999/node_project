@@ -1,7 +1,10 @@
 require('dotenv').config()
 const express = require("express")
 const bodyParser = require("body-parser")
-const app = express()
+const expressApp = express()
+
+
+expressApp.use(bodyParser.json());
 
 
 
@@ -17,25 +20,25 @@ let categories = [{
     }
 ]; //id,title,createdDate
 
-app.use(bodyParser.json());
+
 
 //crud for categories
 
 //create a categories , request method :post
-app.post('/categories', (req, res) => {
+expressApp.post('/categories', (req, res) => {
     categories.push(req.body)
-    res.status(201).json(`{message: 'abcd'}` + req.body);
+    res.status(201).json(req.body);
 })
 
 //get all categories, request method : get 
-app.get('/categories', (req, res) => {
+expressApp.get('/categories', (req, res) => {
     res.status(200).json(categories);
 })
 
 
 
 //get categories by id , request method :Get
-app.get('/categories/:id', (req, res) => {
+expressApp.get('/categories/:id', (req, res) => {
     let category = categories.find(user => user.id === parseInt(req.params.id));
     if (!category) res.status(404).send(`The category with the given id: ${req.params.id} is not found`);
 
@@ -43,7 +46,7 @@ app.get('/categories/:id', (req, res) => {
 })
 
 //update categories by id , request method :put
-app.put('/categories/:id', (req, res) => {
+expressApp.put('/categories/:id', (req, res) => {
     let categoryIndex = categories.findIndex((category) => category.id === parseInt(req.params.id));
 
     if (categoryIndex === -1) {
@@ -62,7 +65,7 @@ app.put('/categories/:id', (req, res) => {
 
 //delete categories by id , request method : delete
 
-app.delete("/categories/:id", (req, res) => {
+expressApp.delete("/categories/:id", (req, res) => {
     let categoryIndex = categories.findIndex((category) => category.id === parseInt(req.params.id));
 
     if (categoryIndex === -1) {
@@ -71,10 +74,7 @@ app.delete("/categories/:id", (req, res) => {
         });
     }
     categories.splice(categoryIndex, 1);
-    res.status(204).json(`category with given id: ${req.params.id} was deleted`)
-
-
-
+    res.status(200).send(`Sucessfully deleted category having id : ${req.params.id}`)
 })
 
 
@@ -90,7 +90,7 @@ let books = []; //id, title, description, categoryId, author, createdDate
 //crud for books
 
 //create a books , request method :post
-app.post('/books', (req, res) => {
+expressApp.post('/books', (req, res) => {
     result = categories.find(category => category.id == req.body.categoryId)
     if (result) {
         books.push(req.body)
@@ -101,7 +101,7 @@ app.post('/books', (req, res) => {
 })
 
 //get all books, request method : get 
-app.get('/books', (req, res) => {
+expressApp.get('/books', (req, res) => {
     res.status(200).json(books);
 })
 
@@ -109,7 +109,7 @@ app.get('/books', (req, res) => {
 
 
 //get books by id , request method :Get
-app.get('/books/:id', (req, res) => {
+expressApp.get('/books/:id', (req, res) => {
     let book = books.find(book => book.id === parseInt(req.params.id));
     if (!book) res.status(404).send(`The book with the given id: ${req.params.id} is not found`);
 
@@ -118,7 +118,7 @@ app.get('/books/:id', (req, res) => {
 
 
 //update books by id , request method :put
-app.put('/books/:id', (req, res) => {
+expressApp.put('/books/:id', (req, res) => {
     let bookIndex = books.findIndex((book) => book.id === parseInt(req.params.id));
 
     if (bookIndex === -1) {
@@ -141,7 +141,7 @@ app.put('/books/:id', (req, res) => {
 
 //delete books by id , request method : delete
 
-app.delete("/books/:id", (req, res) => {
+expressApp.delete("/books/:id", (req, res) => {
     let bookIndex = books.findIndex((book) => book.id === parseInt(req.params.id));
 
     if (bookIndex === -1) {
@@ -150,7 +150,7 @@ app.delete("/books/:id", (req, res) => {
         });
     }
     books.splice(bookIndex, 1);
-    res.status(204).json("book with given id was deleted")
+    res.status(200).send(`Sucessfully deleted book having id : ${req.params.id}`)
 
 
 
@@ -165,6 +165,6 @@ app.delete("/books/:id", (req, res) => {
 
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+expressApp.listen(port, () => {
     console.log(`Server is running in the port ${port}`);
 })

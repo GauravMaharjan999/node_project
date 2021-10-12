@@ -8,17 +8,7 @@ expressApp.use(bodyParser.json());
 
 
 
-let categories = [{
-        "id": 1,
-        "title": "action",
-        "createdDate": "1-jan-2021"
-    },
-    {
-        "id": 2,
-        "title": "historic",
-        "createdDate": "2-jan-2021"
-    }
-]; //id,title,createdDate
+let categories = []; //id,title,createdDate
 
 
 

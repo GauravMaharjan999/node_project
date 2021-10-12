@@ -40,7 +40,7 @@ expressApp.get('/categories', (req, res) => {
 //get categories by id , request method :Get
 expressApp.get('/categories/:id', (req, res) => {
     let category = categories.find(user => user.id === parseInt(req.params.id));
-    if (!category) res.status(404).send(`The category with the given id: ${req.params.id} is not found`);
+    if (!category) res.status(404).send(`The category with the given id: ${req.params.id} was not found`);
 
     res.status(200).json(category)
 })
@@ -64,7 +64,6 @@ expressApp.put('/categories/:id', (req, res) => {
 })
 
 //delete categories by id , request method : delete
-
 expressApp.delete("/categories/:id", (req, res) => {
     let categoryIndex = categories.findIndex((category) => category.id === parseInt(req.params.id));
 
@@ -91,11 +90,17 @@ let books = []; //id, title, description, categoryId, author, createdDate
 
 //create a books , request method :post
 expressApp.post('/books', (req, res) => {
-    result = categories.find(category => category.id == req.body.categoryId)
-    if (result) {
+    let result = categories.find(category => category.id == req.body.categoryId)
+
+    let book = books.find(book => book.id === parseInt(req.body.id));
+
+    if (result && !book) {
         books.push(req.body)
         res.status(201).json(req.body)
+    } else if (book) {
+        res.send(`book having id: ${req.body.categoryId} is already created`)
     } else {
+
         res.status(404).json({ message: `cannot find category id ${req.body.categoryId} ` })
     }
 })
@@ -120,6 +125,10 @@ expressApp.get('/books/:id', (req, res) => {
 //update books by id , request method :put
 expressApp.put('/books/:id', (req, res) => {
     let bookIndex = books.findIndex((book) => book.id === parseInt(req.params.id));
+    let checkCategory = categories.find(category => category.id == req.body.categoryId)
+
+
+
 
     if (bookIndex === -1) {
         res.status(404).json({
@@ -127,14 +136,24 @@ expressApp.put('/books/:id', (req, res) => {
         })
     }
 
-    // books[bookIndex] = req.body;
-    books[bookIndex]["name"] = req.body.name;
-    books[bookIndex]["title"] = req.body.title;
-    books[bookIndex]["description"] = req.body.description;
-    books[bookIndex]["categoryId"] = req.body.categoryId;
-    books[bookIndex]["createdDate"] = req.body.createdDate;
+    if (!checkCategory) {
+        res.status(404).json({ error: ` Sorry, category having id: ${req.body.categoryId} doesn't exist` })
+    } else if (req.body.id != req.params.id) {
+        res.status(404).json({ error: ` Sorry, you cannot change id ` })
 
-    res.status(200).json(req.body);
+    } else {
+        // books[bookIndex] = req.body;
+        books[bookIndex]["name"] = req.body.name;
+        books[bookIndex]["title"] = req.body.title;
+        books[bookIndex]["description"] = req.body.description;
+        books[bookIndex]["categoryId"] = req.body.categoryId;
+        books[bookIndex]["createdDate"] = req.body.createdDate;
+
+        res.status(200).json(req.body);
+
+    }
+
+
 
 })
 
